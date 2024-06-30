@@ -1,0 +1,7 @@
+org\golovlev\magicwands\WandItem.class
+org\golovlev\magicwands\TutorialBook.class
+org\golovlev\magicwands\Spells.class
+org\golovlev\magicwands\Commands.class
+org\golovlev\magicwands\MagicWands.class
+org\golovlev\magicwands\ConfigVars.class
+org\golovlev\magicwands\MagicWandsListener.class

@@ -1,0 +1,12 @@
+name: MagicWands
+version: '1.0'
+main: org.golovlev.magicwands.MagicWands
+api-version: '1.21'
+commands:
+  magicwand:
+    description: 'A wand that does many things'
+    usage: '/magicwand'
+  magicwandhelp:
+    description: 'Gives a spell tutorial book'
+    usage: '/magicwandhelp'
+
