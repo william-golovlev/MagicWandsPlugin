@@ -1,46 +1,34 @@
 package org.golovlev.magicwands;
 
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.player.PlayerEggThrowEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class MagicWandsListener implements Listener {
-    private final Map<Player, List<Action>> actionSequences= new HashMap<>();
-    private int arrowPenalty;
-    private int potionPenalty;
-    private int beastPenalty;
-    private int lightningPenalty;
-    private Boolean foodSpellIsEnabled;
-    Plugin plugin = MagicWands.getInstance();
+    private final Map<Player, List<Action>> actionSequences = new HashMap<>();
+    private final Map<UUID, List<Long>> playerCooldowns = new HashMap<>();
 
-    MagicWandsListener(int arrowPenalty, int potionPenalty, int beastPenalty, int lightningPenalty, Boolean foodSpellIsEnabled) {
-        this.arrowPenalty = arrowPenalty;
-        this.potionPenalty = potionPenalty;
-        this.beastPenalty = beastPenalty;
-        this.lightningPenalty = lightningPenalty;
-        this.foodSpellIsEnabled = foodSpellIsEnabled;
-    }
+    Plugin plugin = MagicWands.getInstance();
+    ConfigVars config = new ConfigVars();
+    Boolean foodSpellIsEnabled = config.isFoodSpellEnabled();
+
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event)
     {
@@ -106,6 +94,31 @@ public class MagicWandsListener implements Listener {
 
     private void testActionsSequence(Player player)
     {
+        int arrowPenalty = config.getArrowFoodPenalty();
+        int arrowCooldown = config.getArrowCooldown();
+
+        int potionPenalty = config.getPotionFoodPenalty();
+        int potionCooldown = config.getPotionCooldown();
+
+        int lightningPenalty = config.getLightningFoodPenalty();
+        int lightningCooldown = config.getLightningCooldown();
+
+        int beastPenalty = config.getBeastFoodPenalty();
+        int beastCooldown = config.getBeastCooldown();
+
+        long currentTime = System.currentTimeMillis() / 1000;
+
+        if (!playerCooldowns.containsKey(player.getUniqueId())) {
+            ArrayList<Long> cooldowns = new ArrayList<Long>();
+            cooldowns.add(Long.valueOf(arrowCooldown));
+            cooldowns.add(Long.valueOf(potionCooldown));
+            cooldowns.add(Long.valueOf(lightningCooldown));
+            cooldowns.add(Long.valueOf(beastCooldown));
+            playerCooldowns.put(player.getUniqueId(), cooldowns);
+        }
+
+
+
         List<Action> actionList = actionSequences.get(player);
         int size = actionList.size();
         Spells cast = new Spells(plugin);
@@ -124,45 +137,83 @@ public class MagicWandsListener implements Listener {
             if (mostRecentAction == Action.RIGHT_CLICK_AIR &&
                     secondRecentAction == Action.RIGHT_CLICK_AIR)
             {
-                player.sendMessage("You summon an arrow... and reset your moves!");
-                cast.summonArrow(player);
-                newFoodLevel = Math.max(currentFoodLevel - arrowPenalty, 0);
-                player.setFoodLevel(newFoodLevel);
-                player.setSaturation(0);
-                actionSequences.put(player, new ArrayList<Action>()); //clear actions since we want to see new ones!
+                List<Long> allCooldowns = playerCooldowns.get(player.getUniqueId());
+                long timeElapsed = currentTime - allCooldowns.get(0);
+                if (timeElapsed >= arrowCooldown) {
+                    player.sendMessage("You summon an arrow... and reset your moves!");
+                    cast.summonArrow(player);
+                    newFoodLevel = Math.max(currentFoodLevel - arrowPenalty, 0);
+                    player.setFoodLevel(newFoodLevel);
+                    player.setSaturation(0);
+                    allCooldowns.set(0, currentTime);
+                    playerCooldowns.put(player.getUniqueId(), allCooldowns);
+                    actionSequences.put(player, new ArrayList<Action>()); //clear actions since we want to see new ones!
+                }
+                else {
+                    player.sendMessage("Summoning an arrow spell is on cooldown for: " + String.valueOf(arrowCooldown - timeElapsed) + "s");
+                }
             }
             else if (mostRecentAction == Action.LEFT_CLICK_BLOCK &&
                     secondRecentAction == Action.RIGHT_CLICK_BLOCK)
             {
-                player.sendMessage("You summon a potion... and reset your moves!");
-                cast.summonPotion(player);
-                newFoodLevel = Math.max(currentFoodLevel - potionPenalty, 0);
-                player.setFoodLevel(newFoodLevel);
-                player.setSaturation(0);
-                actionSequences.put(player, new ArrayList<Action>()); //clear actions since we want to see new ones!
+                List<Long> allCooldowns = playerCooldowns.get(player.getUniqueId());
+                long timeElapsed = currentTime - allCooldowns.get(1);
+                if (timeElapsed >= potionCooldown) {
+                    player.sendMessage("You summon a potion... and reset your moves!");
+                    cast.summonPotion(player);
+                    newFoodLevel = Math.max(currentFoodLevel - potionPenalty, 0);
+                    player.setFoodLevel(newFoodLevel);
+                    player.setSaturation(0);
+                    allCooldowns.set(1, currentTime);
+                    playerCooldowns.put(player.getUniqueId(), allCooldowns);
+                    actionSequences.put(player, new ArrayList<Action>()); //clear actions since we want to see new ones!
+                }
+                else {
+                    player.sendMessage("Summoning a potion spell is on cooldown for: " + String.valueOf(potionCooldown - timeElapsed) + "s");
+                }
 
             }
             else if (size >= 3) {
                 Action thirdRecentAction = actionList.get(size - 3);
                 if (mostRecentAction == Action.RIGHT_CLICK_AIR && secondRecentAction == Action.LEFT_CLICK_BLOCK &&
                         thirdRecentAction == Action.LEFT_CLICK_BLOCK) {
-                    player.sendMessage("You summon a bolt of lightning... and reset your moves!");
-                    cast.summonLightning(player);
-                    newFoodLevel = Math.max(currentFoodLevel - lightningPenalty, 0);
-                    player.setFoodLevel(newFoodLevel);
-                    player.setSaturation(0);
-                    actionSequences.put(player, new ArrayList<Action>()); //clear actions if spell cast
+                    List<Long> allCooldowns = playerCooldowns.get(player.getUniqueId());
+                    long timeElapsed = currentTime - allCooldowns.get(2);
+
+                    if (timeElapsed >= lightningCooldown) {
+                        player.sendMessage("You summon a bolt of lightning... and reset your moves!");
+                        cast.summonLightning(player);
+                        newFoodLevel = Math.max(currentFoodLevel - lightningPenalty, 0);
+                        player.setFoodLevel(newFoodLevel);
+                        player.setSaturation(0);
+                        allCooldowns.set(2, currentTime);
+                        playerCooldowns.put(player.getUniqueId(), allCooldowns);
+                        actionSequences.put(player, new ArrayList<Action>()); //clear actions if spell cast
+                    }
+                    else {
+                        player.sendMessage("Summoning a lightning spell is on cooldown for: " + String.valueOf(lightningCooldown - timeElapsed) + "s");
+                    }
                 }
                 else if (size >= 4) {
                     Action fourthRecentAction = actionList.get(size - 4);
                     if (mostRecentAction == Action.RIGHT_CLICK_BLOCK && secondRecentAction == Action.LEFT_CLICK_BLOCK &&
                             thirdRecentAction == Action.LEFT_CLICK_BLOCK && fourthRecentAction == Action.LEFT_CLICK_BLOCK) {
-                        player.sendMessage("You summon a beast... and reset your moves!");
-                        cast.summonBeast(player);
-                        newFoodLevel = Math.max(currentFoodLevel - beastPenalty, 0);
-                        player.setFoodLevel(newFoodLevel);
-                        player.setSaturation(0);
-                        actionSequences.put(player, new ArrayList<Action>()); //clear actions if spell cast
+                        List<Long> allCooldowns = playerCooldowns.get(player.getUniqueId());
+                        long timeElapsed = currentTime - allCooldowns.get(3);
+
+                        if (timeElapsed >= beastCooldown) {
+                            player.sendMessage("You summon a beast... and reset your moves!");
+                            cast.summonBeast(player);
+                            newFoodLevel = Math.max(currentFoodLevel - beastPenalty, 0);
+                            player.setFoodLevel(newFoodLevel);
+                            player.setSaturation(0);
+                            allCooldowns.set(3, currentTime);
+                            playerCooldowns.put(player.getUniqueId(), allCooldowns);
+                            actionSequences.put(player, new ArrayList<Action>()); //clear actions if spell cast
+                        }
+                        else {
+                            player.sendMessage("Summoning a beast spell is on cooldown for: " + String.valueOf(beastCooldown - timeElapsed) + "s");
+                        }
                     }
                 }
             }
@@ -194,6 +245,39 @@ public class MagicWandsListener implements Listener {
             if (egg.hasMetadata("lightning")) {
                 entity.getLocation().getWorld().strikeLightning(entity.getLocation());
             }
+        }
+        if (entity.getType() == EntityType.ARROW) {
+            Arrow arrow = (Arrow) entity;
+            if (arrow.getShooter() instanceof Player && arrow.hasMetadata("arrow-spell")) {
+                Entity hitEntity = event.getHitEntity();
+                if (hitEntity != null) {
+                    Location hitLocation = hitEntity.getLocation();
+                    spawnFireworkExplosion(hitLocation);
+                    arrow.remove();
+                }
+            }
+        }
+    }
+
+    private void spawnFireworkExplosion(Location location) {
+        Firework firework = location.getWorld().spawn(location, Firework.class);
+        FireworkMeta fireworkMeta = firework.getFireworkMeta();
+        fireworkMeta.addEffect(FireworkEffect.builder()
+                .withColor(Color.AQUA)
+                .with(FireworkEffect.Type.BALL)
+                .withFlicker()
+                .withTrail()
+                .build());
+        firework.setFireworkMeta(fireworkMeta);
+        firework.setVelocity(new Vector(0,0,0));
+        firework.detonate();
+    }
+
+    @EventHandler
+    public void onEggHit(PlayerEggThrowEvent event) {
+        Egg egg = event.getEgg();
+        if (egg.hasMetadata("lightning")) {
+            event.setHatching(false);
         }
     }
 }

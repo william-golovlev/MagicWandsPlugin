@@ -36,9 +36,9 @@ public class Spells {
     public void summonArrow(Player player) {
         Vector eyeDirection = player.getEyeLocation().getDirection();
         Arrow arrow = player.getWorld().spawnArrow(player.getEyeLocation(), eyeDirection, 1.0f, 0.0f);
-
+        arrow.setMetadata("arrow-spell", new FixedMetadataValue(plugin, "arrow"));
         arrow.setShooter(player);
-        arrow.setVelocity(eyeDirection.multiply(3.0));
+        arrow.setVelocity(eyeDirection.multiply(4.0));
     }
 
     public void summonBeast(Player player) {

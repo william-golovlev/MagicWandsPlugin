@@ -15,9 +15,6 @@ public class Commands implements CommandExecutor {
             if (cmd.getName().equalsIgnoreCase("magicwand")) {
                 WandItem wand = new WandItem();
                 boolean given = wand.giveWand(player);
-                if (given) {
-                    player.sendMessage("You have received the wand...");
-                }
                 return true;
             }
             else if (cmd.getName().equalsIgnoreCase("magicwandhelp")) {

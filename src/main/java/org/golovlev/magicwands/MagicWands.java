@@ -38,14 +38,8 @@ public final class MagicWands extends JavaPlugin {
         // Plugin startup logic
         instance = this;
         getLogger().info("Magic Wands are enabled!");
-        ConfigVars config = new ConfigVars();
-        int arrowPenalty = config.getArrowFoodPenalty();
-        int potionPenalty = config.getPotionFoodPenalty();
-        int beastPenalty = config.getBeastFoodPenalty();
-        int lightningPenalty = config.getLightningFoodPenalty();
-        Boolean foodSpellisEnabled = config.isFoodSpellEnabled();
 
-        MagicWandsListener listener = new MagicWandsListener(arrowPenalty, potionPenalty, beastPenalty, lightningPenalty, foodSpellisEnabled);
+        MagicWandsListener listener = new MagicWandsListener();
         getServer().getPluginManager().registerEvents(listener, this);
         Commands commandExecutor = new Commands();
         getCommand("magicwand").setExecutor(commandExecutor);
