@@ -277,6 +277,7 @@ public class MagicWandsListener implements Listener {
     @EventHandler
     public void onFireworkExplode (FireworkExplodeEvent event) {
         //todo
+        //todo
     }
 
     @EventHandler
