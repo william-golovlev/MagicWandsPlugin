@@ -5,6 +5,7 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.FireworkExplodeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerEggThrowEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -271,6 +272,11 @@ public class MagicWandsListener implements Listener {
         firework.setFireworkMeta(fireworkMeta);
         firework.setVelocity(new Vector(0,0,0));
         firework.detonate();
+    }
+
+    @EventHandler
+    public void onFireworkExplode (FireworkExplodeEvent event) {
+        //todo
     }
 
     @EventHandler
