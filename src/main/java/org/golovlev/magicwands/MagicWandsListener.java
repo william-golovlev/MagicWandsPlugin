@@ -1,5 +1,8 @@
 package org.golovlev.magicwands;
 
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -151,7 +154,9 @@ public class MagicWandsListener implements Listener {
                     actionSequences.put(player, new ArrayList<Action>()); //clear actions since we want to see new ones!
                 }
                 else {
-                    player.sendMessage("Summoning an arrow spell is on cooldown for: " + String.valueOf(arrowCooldown - timeElapsed) + "s");
+                    BaseComponent[] components = TextComponent.fromLegacyText("Arrow spell is on cooldown for " + String.valueOf(arrowCooldown - timeElapsed) + "s"); //§l makes the text bold
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, components);
+                    //player.sendMessage("Summoning an arrow spell is on cooldown for: " + String.valueOf(arrowCooldown - timeElapsed) + "s");
                 }
             }
             else if (mostRecentAction == Action.LEFT_CLICK_BLOCK &&
@@ -170,7 +175,9 @@ public class MagicWandsListener implements Listener {
                     actionSequences.put(player, new ArrayList<Action>()); //clear actions since we want to see new ones!
                 }
                 else {
-                    player.sendMessage("Summoning a potion spell is on cooldown for: " + String.valueOf(potionCooldown - timeElapsed) + "s");
+                    BaseComponent[] components = TextComponent.fromLegacyText("Potion spell is on cooldown for " + String.valueOf(potionCooldown - timeElapsed) + "s"); //§l makes the text bold
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, components);
+                    //player.sendMessage("Summoning a potion spell is on cooldown for: " + String.valueOf(potionCooldown - timeElapsed) + "s");
                 }
 
             }
@@ -192,7 +199,9 @@ public class MagicWandsListener implements Listener {
                         actionSequences.put(player, new ArrayList<Action>()); //clear actions if spell cast
                     }
                     else {
-                        player.sendMessage("Summoning a lightning spell is on cooldown for: " + String.valueOf(lightningCooldown - timeElapsed) + "s");
+                        BaseComponent[] components = TextComponent.fromLegacyText("Lightning spell is on cooldown for " + String.valueOf(lightningCooldown - timeElapsed) + "s"); //§l makes the text bold
+                        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, components);
+                        //player.sendMessage("Summoning a lightning spell is on cooldown for: " + String.valueOf(lightningCooldown - timeElapsed) + "s");
                     }
                 }
                 else if (size >= 4) {
@@ -213,7 +222,9 @@ public class MagicWandsListener implements Listener {
                             actionSequences.put(player, new ArrayList<Action>()); //clear actions if spell cast
                         }
                         else {
-                            player.sendMessage("Summoning a beast spell is on cooldown for: " + String.valueOf(beastCooldown - timeElapsed) + "s");
+                            BaseComponent[] components = TextComponent.fromLegacyText("Beast spell is on cooldown for " + String.valueOf(beastCooldown - timeElapsed) + "s"); //§l makes the text bold
+                            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, components);
+                            //player.sendMessage("Summoning a beast spell is on cooldown for: " + String.valueOf(beastCooldown - timeElapsed) + "s");
                         }
                     }
                 }

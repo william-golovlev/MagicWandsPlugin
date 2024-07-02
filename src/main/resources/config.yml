@@ -1,0 +1,14 @@
+#Cooldown is in seconds
+summonPotion_Cooldown: 30
+summonArrow_Cooldown: 1
+summonBeast_Cooldown: 300
+summonLightning_Cooldown: 60
+
+#Every multiple of 2 == one bar of hunger. So 6 is 3 bars of hunger
+summonLightning_Food_Penalty: 6
+summonPotion_Food_Penalty: 2
+summonArrow_Food_Penalty: 1
+summonBeast_Food_Penalty: 4
+
+#Food spell replenishes full hunger bar
+enableFoodSpell: true

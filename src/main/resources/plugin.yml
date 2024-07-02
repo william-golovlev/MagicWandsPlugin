@@ -9,4 +9,8 @@ commands:
   magicwandhelp:
     description: 'Gives a spell tutorial book'
     usage: '/magicwandhelp'
+permissions:
+  MagicWands.use:
+    description: 'Allows players to use the commands of this plugin'
+    default: true
 
