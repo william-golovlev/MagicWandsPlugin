@@ -37,6 +37,8 @@ public class TutorialBook {
         pages.add("The fourth spell is a lightning spell. You can cast it in the following way: \n\n" +
                 ChatColor.YELLOW + ChatColor.BOLD.toString() + "Swing" + ChatColor.BLACK + " then " + ChatColor.YELLOW + ChatColor.BOLD.toString() + " Swing" +
                 ChatColor.BLACK + " then " + ChatColor.AQUA + ChatColor.BOLD.toString() + " Twirl");
+        pages.add("The fifth spell is a flame punch spell. You can cast it in the following way: \n\n" +
+                ChatColor.GREEN + ChatColor.BOLD.toString() + "Thrust" + ChatColor.BLACK + " then " + ChatColor.GREEN + ChatColor.BOLD.toString() + "Thrust");
         pages.add("Finally, you can cast hunger replenish if enabled:\n\n" + ChatColor.BOLD.toString() + "Sneak");
         bookMeta.setPages(pages);
 

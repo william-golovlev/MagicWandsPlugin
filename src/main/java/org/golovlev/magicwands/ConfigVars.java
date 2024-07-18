@@ -46,6 +46,10 @@ public class ConfigVars {
         return config.getInt("summonArrow_Cooldown");
     }
 
+    public double getArrowDamage() {
+        return config.getDouble("summonArrow_damage");
+    }
+
     public int getBeastFoodPenalty() {
         return config.getInt("summonBeast_Food_Penalty");
     }
@@ -60,6 +64,18 @@ public class ConfigVars {
 
     public int getLightningCooldown() {
         return config.getInt("summonLightning_Cooldown");
+    }
+
+    public int getFlameFoodPenalty() {
+        return config.getInt("summonFlame_Food_Penalty");
+    }
+
+    public int getFlameCooldown() {
+        return config.getInt("summonFlame_Cooldown");
+    }
+
+    public double getFlameKnockback() {
+        return config.getDouble("summonFlame_Knockback_Level");
     }
 
     public Boolean isFoodSpellEnabled() {

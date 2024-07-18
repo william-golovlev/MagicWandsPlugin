@@ -6,6 +6,7 @@ import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -54,6 +55,12 @@ public class Spells {
         beast.setOwner(player);
 
         beast.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).setBaseValue(8.0);
+    }
+
+    public void summonFlameShove(Player player) {
+        EnderPearl flame = player.launchProjectile(EnderPearl.class);
+        flame.setFireTicks(200);
+        flame.setMetadata("flame-spell", new FixedMetadataValue(plugin, "flame"));
     }
 
     public void summonLightning(Player player) {

@@ -10,10 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.FireworkExplodeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.event.player.PlayerEggThrowEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
@@ -67,6 +64,15 @@ public class MagicWandsListener implements Listener {
 
                     testActionsSequence(player);
                 }
+                else if (action == Action.LEFT_CLICK_AIR) {
+                    player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "Thrust");
+
+                    if (actionSequences.containsKey(player)) {
+                        addAction(Action.LEFT_CLICK_AIR, player);
+                    }
+
+                    testActionsSequence(player);
+                }
                 else if (action == Action.RIGHT_CLICK_BLOCK) {
                     player.sendMessage( ChatColor.RED + ChatColor.BOLD.toString() + "Push");
 
@@ -110,6 +116,9 @@ public class MagicWandsListener implements Listener {
         int beastPenalty = config.getBeastFoodPenalty();
         int beastCooldown = config.getBeastCooldown();
 
+        int flamePenalty = config.getFlameFoodPenalty();
+        int flameCooldown = config.getFlameCooldown();
+
         long currentTime = System.currentTimeMillis() / 1000;
 
         if (!playerCooldowns.containsKey(player.getUniqueId())) {
@@ -118,6 +127,7 @@ public class MagicWandsListener implements Listener {
             cooldowns.add(Long.valueOf(potionCooldown));
             cooldowns.add(Long.valueOf(lightningCooldown));
             cooldowns.add(Long.valueOf(beastCooldown));
+            cooldowns.add(Long.valueOf(flameCooldown));
             playerCooldowns.put(player.getUniqueId(), cooldowns);
         }
 
@@ -180,6 +190,25 @@ public class MagicWandsListener implements Listener {
                     //player.sendMessage("Summoning a potion spell is on cooldown for: " + String.valueOf(potionCooldown - timeElapsed) + "s");
                 }
 
+            }
+            else if (mostRecentAction == Action.LEFT_CLICK_AIR &&
+                    secondRecentAction == Action.LEFT_CLICK_AIR) {
+                List<Long> allCooldowns = playerCooldowns.get(player.getUniqueId());
+                long timeElapsed = currentTime - allCooldowns.get(4);
+                if (timeElapsed >= flameCooldown) {
+                    player.sendMessage("You summon a burst of fire... and reset your moves!");
+                    cast.summonFlameShove(player);
+                    newFoodLevel = Math.max(currentFoodLevel - flamePenalty, 0);
+                    player.setFoodLevel(newFoodLevel);
+                    player.setSaturation(0);
+                    allCooldowns.set(4, currentTime);
+                    playerCooldowns.put(player.getUniqueId(), allCooldowns);
+                    actionSequences.put(player, new ArrayList<Action>());
+                }
+                else {
+                    BaseComponent[] components = TextComponent.fromLegacyText("Fire burst spell is on cooldown for " + String.valueOf(flameCooldown - timeElapsed) + "s"); //§l makes the text bold
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, components);
+                }
             }
             else if (size >= 3) {
                 Action thirdRecentAction = actionList.get(size - 3);
@@ -249,6 +278,7 @@ public class MagicWandsListener implements Listener {
         }
     }
 
+    Entity flamePearl = null;
     @EventHandler
     public void onProjectileHit(ProjectileHitEvent event) {
         Entity entity = event.getEntity();
@@ -262,12 +292,36 @@ public class MagicWandsListener implements Listener {
             Arrow arrow = (Arrow) entity;
             if (arrow.getShooter() instanceof Player && arrow.hasMetadata("arrow-spell")) {
                 Entity hitEntity = event.getHitEntity();
+                arrow.setDamage(config.getArrowDamage());
                 if (hitEntity != null) {
                     Location hitLocation = hitEntity.getLocation();
                     spawnFireworkExplosion(hitLocation);
                     arrow.remove();
                 }
             }
+        }
+        if (entity.getType() == EntityType.ENDER_PEARL) {
+            EnderPearl ender = (EnderPearl) entity;
+            if (ender.getShooter() instanceof Player && ender.hasMetadata("flame-spell")) {
+                //Set the flamepearl to an instance of ender for use in another listener
+                flamePearl = ender;
+                event.setCancelled(true);
+                Entity hitEntity = event.getHitEntity();
+                if (hitEntity != null) {
+                    hitEntity.setFireTicks(100);
+                    double distance = config.getFlameKnockback(); //# of blocks knocked back
+                    Vector knockback = ((Player) ender.getShooter()).getLocation().getDirection().multiply(distance * 1.5).setY(distance);
+                    hitEntity.setVelocity(knockback);
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerTeleport(PlayerTeleportEvent event) {
+        if (event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL && flamePearl != null) {
+            // Cancel the teleport event
+            event.setCancelled(true);
         }
     }
 
@@ -286,7 +340,7 @@ public class MagicWandsListener implements Listener {
     }
 
     @EventHandler
-    public void onFireworkExplode (FireworkExplodeEvent event) {
+    public void onFireworkExplode(FireworkExplodeEvent event) {
         //todo
         //todo
     }
