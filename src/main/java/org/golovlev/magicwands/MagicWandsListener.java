@@ -115,9 +115,13 @@ public class MagicWandsListener implements Listener {
 
         int beastPenalty = config.getBeastFoodPenalty();
         int beastCooldown = config.getBeastCooldown();
+        Boolean beastEnabled = config.isBeastSpellEnabled();
 
         int flamePenalty = config.getFlameFoodPenalty();
         int flameCooldown = config.getFlameCooldown();
+
+        int explosionPenalty = config.getExplosionFoodPenalty();
+        int explosionCooldown = config.getExplosionCooldown();
 
         long currentTime = System.currentTimeMillis() / 1000;
 
@@ -128,6 +132,7 @@ public class MagicWandsListener implements Listener {
             cooldowns.add(Long.valueOf(lightningCooldown));
             cooldowns.add(Long.valueOf(beastCooldown));
             cooldowns.add(Long.valueOf(flameCooldown));
+            cooldowns.add(Long.valueOf(explosionCooldown));
             playerCooldowns.put(player.getUniqueId(), cooldowns);
         }
 
@@ -233,10 +238,30 @@ public class MagicWandsListener implements Listener {
                         //player.sendMessage("Summoning a lightning spell is on cooldown for: " + String.valueOf(lightningCooldown - timeElapsed) + "s");
                     }
                 }
+                else if (mostRecentAction == Action.RIGHT_CLICK_BLOCK && secondRecentAction == Action.LEFT_CLICK_AIR && thirdRecentAction == Action.RIGHT_CLICK_BLOCK) {
+                    List<Long> allCooldowns = playerCooldowns.get(player.getUniqueId());
+                    long timeElapsed = currentTime - allCooldowns.get(5);
+
+                    if (timeElapsed >= explosionCooldown) {
+                        player.sendMessage("You summon a fiery explosion... and reset your moves!");
+                        cast.summonExplosion(player);
+                        newFoodLevel = Math.max(currentFoodLevel - explosionPenalty, 0);
+                        player.setFoodLevel(newFoodLevel);
+                        player.setSaturation(0);
+                        allCooldowns.set(5, currentTime);
+                        playerCooldowns.put(player.getUniqueId(), allCooldowns);
+                        actionSequences.put(player, new ArrayList<Action>()); //clear actions if spell cast
+                    }
+                    else {
+                        BaseComponent[] components = TextComponent.fromLegacyText("Fiery explosion spell is on cooldown for " + String.valueOf(explosionCooldown - timeElapsed) + "s"); //§l makes the text bold
+                        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, components);
+                        //player.sendMessage("Summoning a lightning spell is on cooldown for: " + String.valueOf(lightningCooldown - timeElapsed) + "s");
+                    }
+                }
                 else if (size >= 4) {
                     Action fourthRecentAction = actionList.get(size - 4);
                     if (mostRecentAction == Action.RIGHT_CLICK_BLOCK && secondRecentAction == Action.LEFT_CLICK_BLOCK &&
-                            thirdRecentAction == Action.LEFT_CLICK_BLOCK && fourthRecentAction == Action.LEFT_CLICK_BLOCK) {
+                            thirdRecentAction == Action.LEFT_CLICK_BLOCK && fourthRecentAction == Action.LEFT_CLICK_BLOCK && beastEnabled) {
                         List<Long> allCooldowns = playerCooldowns.get(player.getUniqueId());
                         long timeElapsed = currentTime - allCooldowns.get(3);
 

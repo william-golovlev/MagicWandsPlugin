@@ -1,5 +1,5 @@
 name: MagicWands
-version: '1.2'
+version: '1.4'
 main: org.golovlev.magicwands.MagicWands
 api-version: '1.21'
 commands:

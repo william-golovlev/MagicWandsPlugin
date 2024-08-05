@@ -14,15 +14,15 @@ public class ConfigVars {
     private void loadConfig() {
         plugin.saveDefaultConfig();
         config = plugin.getConfig();
-        config.addDefault("summonPotion_Food_Penalty", 2);
-        config.addDefault("summonPotion_Cooldown", 30);
-        config.addDefault("summonArrow_Food_Penalty", 1);
-        config.addDefault("summonArrow_Cooldown", 0);
-        config.addDefault("summonBeast_Food_Penalty", 8);
-        config.addDefault("summonBeast_Cooldown", 300);
-        config.addDefault("summonLightning_Food_Penalty", 6);
-        config.addDefault("summonLightning_Cooldown", 60);
-        config.addDefault("enableFoodSpell", true);
+//        config.addDefault("summonPotion_Food_Penalty", 2);
+//        config.addDefault("summonPotion_Cooldown", 30);
+//        config.addDefault("summonArrow_Food_Penalty", 1);
+//        config.addDefault("summonArrow_Cooldown", 0);
+//        config.addDefault("summonBeast_Food_Penalty", 8);
+//        config.addDefault("summonBeast_Cooldown", 300);
+//        config.addDefault("summonLightning_Food_Penalty", 6);
+//        config.addDefault("summonLightning_Cooldown", 60);
+//        config.addDefault("enableFoodSpell", true);
 
 
         config.options().copyDefaults(true);
@@ -74,11 +74,23 @@ public class ConfigVars {
         return config.getInt("summonFlame_Cooldown");
     }
 
+    public int getExplosionFoodPenalty() {
+        return config.getInt("summonExplosion_Food_Penalty");
+    }
+
+    public int getExplosionCooldown() {
+        return config.getInt("summonExplosion_Cooldown");
+    }
+
     public double getFlameKnockback() {
         return config.getDouble("summonFlame_Knockback_Level");
     }
 
     public Boolean isFoodSpellEnabled() {
         return config.getBoolean("enableFoodSpell");
+    }
+
+    public Boolean isBeastSpellEnabled() {
+        return config.getBoolean("enableBeastSpell");
     }
 }

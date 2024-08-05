@@ -67,4 +67,29 @@ public class Spells {
         Egg egg = player.launchProjectile(Egg.class);
         egg.setMetadata("lightning", new FixedMetadataValue(plugin, "egg"));
     }
+
+    public void summonExplosion(Player player) {
+        Location location = player.getLocation();
+        int fireDuration = 200; //ticks
+        int immediateDamage = 2; //2 == 1 heart
+        int radius = 7;
+        for (double x = -radius; x <= radius; x++) {
+            for (double y = -radius; y <= radius; y++) {
+                for (double z = -radius; z <= radius; z++) {
+                    if (x * x + y * y + z * z <= radius * radius)
+                    {
+                        location.add(x, y, z);
+                        player.getWorld().spawnParticle(Particle.FLAME, location, 1, 0, 0, 0);
+                        location.subtract(x, y, z);
+                    }
+                }
+            }
+        }
+        for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
+            if (entity instanceof LivingEntity) {
+                ((LivingEntity) entity).setFireTicks(fireDuration); // Adjust burn duration
+                ((LivingEntity) entity).damage(immediateDamage);
+            }
+        }
+    }
 }

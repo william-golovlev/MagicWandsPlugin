@@ -19,6 +19,7 @@ public class TutorialBook {
         bookMeta.addEnchant(Enchantment.UNBREAKING, 10, true);
         bookMeta.setAuthor("Gandalf the Gray");
 
+        //push is right click block, thrust is left click air
         ArrayList<String> pages = new ArrayList<>();
         pages.add("Welcome to the book of spells, young wizard...\nThere are mappings for 3 movements.\n\n" +
                 ChatColor.AQUA + ChatColor.BOLD.toString() + "Twirl R-CLICK-AIR\n" +
@@ -39,6 +40,9 @@ public class TutorialBook {
                 ChatColor.BLACK + " then " + ChatColor.AQUA + ChatColor.BOLD.toString() + " Twirl");
         pages.add("The fifth spell is a flame punch spell. You can cast it in the following way: \n\n" +
                 ChatColor.GREEN + ChatColor.BOLD.toString() + "Thrust" + ChatColor.BLACK + " then " + ChatColor.GREEN + ChatColor.BOLD.toString() + "Thrust");
+        pages.add("The sixth spell is a fiery explosion spell. You can cast it in the following way: \n\n" +
+                ChatColor.RED + ChatColor.BOLD.toString() + "Push" + ChatColor.BLACK + " then " + ChatColor.GREEN + ChatColor.BOLD.toString() + "Thrust" +
+                ChatColor.RED + ChatColor.BOLD.toString() + "Push");
         pages.add("Finally, you can cast hunger replenish if enabled:\n\n" + ChatColor.BOLD.toString() + "Sneak");
         bookMeta.setPages(pages);
 
