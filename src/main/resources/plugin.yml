@@ -7,7 +7,7 @@ commands:
     description: 'A wand that does many things'
     usage: '/magicwand'
   magicwandhelp:
-    description: 'Gives a spell tutorial book'
+    description: 'Gives a spell tutorial book to user'
     usage: '/magicwandhelp'
 permissions:
   MagicWands.use:
