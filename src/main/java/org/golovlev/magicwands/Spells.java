@@ -17,26 +17,26 @@ public class Spells {
     public Spells(Plugin plugin) {
         this.plugin = plugin;
     }
-    public void summonPotion(Player player)
-    {
+    public void summonPotion(Player player) {
+        // Create the splash potion item stack with effects
         ItemStack potion = new ItemStack(Material.SPLASH_POTION);
-
         PotionMeta potionMeta = (PotionMeta) potion.getItemMeta();
         potionMeta.addCustomEffect(new PotionEffect(PotionEffectType.SPEED, 600, 1), true);
         potionMeta.addCustomEffect(new PotionEffect(PotionEffectType.STRENGTH, 600, 2), true);
         potionMeta.addCustomEffect(new PotionEffect(PotionEffectType.REGENERATION, 300, 1), true);
-
         potion.setItemMeta(potionMeta);
 
-        player.getWorld().spawn(player.getLocation(), ThrownPotion.class, thrownPotion -> {
-            thrownPotion.setItem(potion);
-            thrownPotion.setShooter(player);
-        });
+        // Launch the potion as a projectile from the player
+        ThrownPotion thrownPotion = player.launchProjectile(ThrownPotion.class);
+
+        // Set the potion's item after it's launched
+        thrownPotion.setItem(potion);
     }
 
     public void summonArrow(Player player) {
         Vector eyeDirection = player.getEyeLocation().getDirection();
         Arrow arrow = player.getWorld().spawnArrow(player.getEyeLocation(), eyeDirection, 1.0f, 0.0f);
+        arrow.setMetadata("arrow-spell", new FixedMetadataValue(plugin, "arrow"));
         arrow.setMetadata("arrow-spell", new FixedMetadataValue(plugin, "arrow"));
         arrow.setShooter(player);
         arrow.setVelocity(eyeDirection.multiply(4.0));

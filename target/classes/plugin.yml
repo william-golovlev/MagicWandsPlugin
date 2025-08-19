@@ -1,5 +1,5 @@
 name: MagicWands
-version: '1.4'
+version: '1.5'
 main: org.golovlev.magicwands.MagicWands
 api-version: '1.21'
 commands:
@@ -7,7 +7,7 @@ commands:
     description: 'A wand that does many things'
     usage: '/magicwand'
   magicwandhelp:
-    description: 'Gives a spell tutorial book'
+    description: 'Gives a spell tutorial book to user'
     usage: '/magicwandhelp'
 permissions:
   MagicWands.use:
